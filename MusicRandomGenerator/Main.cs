@@ -1,6 +1,3 @@
-using static System.Windows.Forms.LinkLabel;
-using System.Security.Policy;
-
 namespace MusicRandomGenerator
 {
     public partial class Main : Form
@@ -186,7 +183,6 @@ namespace MusicRandomGenerator
 
         private List<string> GenerateChordProgression(List<string> notesInKey)
         {
-            // Define possible chord progressions
             var possibleProgressions = new List<List<string>>
             {
                 new List<string> { "I", "IV", "V", "I" },
@@ -196,7 +192,6 @@ namespace MusicRandomGenerator
                 new List<string> { "I", "IV", "ii", "V" }
             };
 
-            // Randomly select a progression
             Random random = new Random();
             var selectedProgression = possibleProgressions[random.Next(possibleProgressions.Count)];
 
@@ -274,10 +269,8 @@ namespace MusicRandomGenerator
             int totalBars = 4;
             Random random = new Random();
 
-            // Initialize melody lines for each note in the scale
             foreach (var note in notesInKey)
             {
-                // Add a space after natural notes to align with sharp/flat notes
                 string noteLabel = note.Length == 1 ? $"{note} : " : $"{note}: ";
                 melodyLines.Add(noteLabel);
             }
@@ -287,19 +280,17 @@ namespace MusicRandomGenerator
                 for (int beat = 0; beat < beatsPerBar; beat++)
                 {
                     bool notePlaced = false;
-                    string noteToPlay = null; // Declare noteToPlay outside the if block
+                    string noteToPlay = null;
 
-                    if (random.NextDouble() > 0.5) // Randomly decide to place a note or not
+                    if (random.NextDouble() > 0.5)
                     {
                         noteToPlay = notesInKey[random.Next(notesInKey.Count)];
                         int noteIndex = notesInKey.IndexOf(noteToPlay);
 
-                        // Replace the dash with an 'o' on the line corresponding to the note
                         melodyLines[noteIndex] += "o ";
                         notePlaced = true;
                     }
 
-                    // Add a '.' for empty beats or after placing a note
                     for (int i = 0; i < melodyLines.Count; i++)
                     {
                         if (!notePlaced || i != notesInKey.IndexOf(noteToPlay))
@@ -309,14 +300,12 @@ namespace MusicRandomGenerator
                     }
                 }
 
-                // Add a bar separator
                 for (int i = 0; i < melodyLines.Count; i++)
                 {
                     melodyLines[i] += "| ";
                 }
             }
 
-            // Remove the last bar separator
             for (int i = 0; i < melodyLines.Count; i++)
             {
                 melodyLines[i] = melodyLines[i].TrimEnd('|', ' ');
@@ -344,34 +333,31 @@ namespace MusicRandomGenerator
                 adjective2 = adjectives[random.Next(adjectives.Count)];
             }
 
-            return $"{adjective1} {adjective2}";
+            adjective1 = char.ToUpper(adjective1[0]) + adjective1.Substring(1);
+            adjective2 = char.ToUpper(adjective2[0]) + adjective2.Substring(1);
+
+            return $"{adjective1}-{adjective2}";
         }
 
 
         private void randomizeBtn_Click(object sender, EventArgs e)
         {
-            // Randomly select a genre
             Random random = new Random();
             var randomGenre = genreBPMRanges.Keys.ElementAt(random.Next(genreBPMRanges.Count));
 
-            // Get a random BPM for the selected genre
             int bpm = GetBPM(randomGenre);
 
-            // Randomly select a musical key
             var randomKey = musicalKeys.Keys.ElementAt(random.Next(musicalKeys.Count));
             var notesInKey = musicalKeys[randomKey];
 
-            // Display the selected genre, BPM, and key
             genreTxt.Text = randomGenre;
             bpmTxt.Text = bpm.ToString();
             keyTxt.Text = randomKey;
             notesTxt.Text = string.Join(", ", notesInKey);
 
-            // Generate a random chord progression
             var chordProgression = GenerateChordProgression(notesInKey);
             progTxt.Text = string.Join(" - ", chordProgression);
 
-            // Display all chords with notes in the chord textbox
             chordTxt.Text = GenerateChordsDisplay(chordProgression, notesInKey);
 
             vibeTxt.Text = GenerateRandomVibe();
@@ -381,13 +367,9 @@ namespace MusicRandomGenerator
         {
             try
             {
-                // Retrieve the notes in the key from the notesTxt textbox
                 var notesInKey = notesTxt.Text.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-                // Retrieve the chord progression from the progTxt textbox
                 var chordProgression = progTxt.Text.Split(new[] { " - " }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-                // Generate and display the melody
                 melodyTxt.Text = GenerateMelody(chordProgression, notesInKey);
             }
             catch
